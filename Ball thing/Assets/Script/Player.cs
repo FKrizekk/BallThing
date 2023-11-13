@@ -1,17 +1,21 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    public float moveMultiplier = 1f;
-    public float jumpForce = 1f;
-    Rigidbody rb;
+    [SerializeField] private float moveMultiplier = 1f;
+    [SerializeField] private float jumpForce = 1f;
+
     public Transform pole;
+    Rigidbody rb;
 
     bool isHolding = false;
     public int score = 0;
+    public TMP_Text scoreText;
+    
 
     private void Awake()
     {
@@ -35,31 +39,25 @@ public class Player : MonoBehaviour
 
             pole.rotation *= Quaternion.Euler(0, inputX * -moveMultiplier, 0);
         }
+
+        scoreText.text = $"SCORE: {score}";
     }
 
-    bool isColliding = false;
     private void OnTriggerEnter(Collider other)
     {
-        if (isColliding) return;
-        isColliding = true;
-
-        if(other.gameObject.tag == "Good")
-        {
-            Score(other.transform);
-            if (!isHolding)
-                rb.velocity = Vector3.up * jumpForce;
-        }
-        else
-        {
+        Score(other.transform);
+        if (!isHolding)
             rb.velocity = Vector3.up * jumpForce;
-        }
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        rb.velocity = Vector3.up * jumpForce;
     }
 
     void Score(Transform transform)
     {
-        Debug.Log("SCORED");
         Destroy(transform.parent.gameObject);
         score++;
-        isColliding = false;
     }
 }
