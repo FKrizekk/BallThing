@@ -6,14 +6,25 @@ using UnityEngine;
 using UnityEngine.VFX;
 using UnityEngine.UI;
 
+[System.Serializable]
+public class SoundClip
+{
+    public AudioClip clip;
+    public float volumeMultiplier;
+}
+
 public class Player : MonoBehaviour
 {
+    [Header("Audio")]
+    [SerializeField] private SoundClip[] clips;
+    [SerializeField] private AudioSource audioSource;
+    [Header("Config")]
     [SerializeField] private float moveMultiplier = 1f;
     [SerializeField] private float jumpForce = 1f;
     [SerializeField] private float verticalVelocityLimit = 1f;
     [SerializeField] private float fireUpTime = 2f;
     [SerializeField] private float fireDuration = 3f;
-
+    [Header("References")]
     [SerializeField] private Image fireChargeImage;
     [SerializeField] private GameManager game;
     public VisualEffect onfireVFX;
@@ -36,7 +47,7 @@ public class Player : MonoBehaviour
     {
         //Movement
         float inputX = Input.GetAxisRaw("Horizontal");
-        transform.parent.rotation *= Quaternion.Euler(0, inputX * -moveMultiplier, 0);
+        transform.parent.rotation *= Quaternion.Euler(0, inputX * -moveMultiplier * Time.deltaTime, 0);
 
         isHolding = Input.GetKey(KeyCode.Space);
         if (Input.GetKeyDown(KeyCode.Space))
@@ -103,7 +114,13 @@ public class Player : MonoBehaviour
 
     void Score(Transform transform)
     {
+        PlaySound(0);
         Destroy(transform.parent.gameObject);
         score++;
+    }
+
+    public void PlaySound(int index)
+    {
+        audioSource.PlayOneShot(clips[index].clip, clips[index].volumeMultiplier);
     }
 }
