@@ -4,14 +4,17 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.VFX;
+using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
     [SerializeField] private float moveMultiplier = 1f;
     [SerializeField] private float jumpForce = 1f;
     [SerializeField] private float verticalVelocityLimit = 1f;
-    [SerializeField] private float fireUpTime = 1f;
+    [SerializeField] private float fireUpTime = 2f;
+    [SerializeField] private float fireDuration = 3f;
 
+    [SerializeField] private Image fireChargeImage;
     [SerializeField] private GameManager game;
     public VisualEffect onfireVFX;
     public Rigidbody rb;
@@ -21,6 +24,7 @@ public class Player : MonoBehaviour
     public TMP_Text scoreText;
     public TMP_Text highScoreText;
     private float holdStartTime = 10000f;
+    private float fireStartTime = 10000f;
     
 
     private void Awake()
@@ -35,7 +39,6 @@ public class Player : MonoBehaviour
         transform.parent.rotation *= Quaternion.Euler(0, inputX * -moveMultiplier, 0);
 
         isHolding = Input.GetKey(KeyCode.Space);
-        Debug.Log("update");
         if (Input.GetKeyDown(KeyCode.Space))
         {
             rb.useGravity = true;
@@ -43,7 +46,26 @@ public class Player : MonoBehaviour
             rb.velocity = new Vector3(rb.velocity.x , -10f, rb.velocity.z);
         }
 
-        onfireVFX.SetBool("spawning", (Time.time - holdStartTime >= fireUpTime) && isHolding);
+        if (onfireVFX.GetBool("spawning"))
+        {
+            fireChargeImage.fillAmount = 1 - (Time.time - fireStartTime) / fireDuration;
+            holdStartTime = Time.time;
+        }
+        else
+        {
+            if (isHolding) { fireChargeImage.fillAmount = (Time.time - holdStartTime) / fireUpTime; }
+        }
+
+        if((Time.time - holdStartTime >= fireUpTime) && isHolding && !onfireVFX.GetBool("spawning"))
+        {
+            onfireVFX.SetBool("spawning", true);
+            fireStartTime = Time.time;
+        }
+
+        if((Time.time - fireStartTime >= fireDuration) || Input.GetKeyUp(KeyCode.Space))
+        {
+            onfireVFX.SetBool("spawning", false);
+        }
 
         //Update score and highScore text
         scoreText.text = $"SCORE: {score}";

@@ -67,7 +67,7 @@ public class GameManager : MonoBehaviour
 
         for (int i = 0; i < amount; i++)
         {
-            yield return new WaitUntil(() => i - player.score < 10);
+            yield return new WaitUntil(() => i - player.score < 30);
             GameObject ring = Instantiate(ringPrefab,new Vector3(0, 0 + -i * 0.71f, 0), Quaternion.Euler(0, (variants[i] * 90) + (Random.value > 0.9f ? 22.5f : 0),0), transform);
         }
     }
