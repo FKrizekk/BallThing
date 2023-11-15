@@ -1033,7 +1033,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   clips:
   - clip: {fileID: 8300000, guid: c46c4681eb108154fa7ed346641e298f, type: 3}
-    volumeMultiplier: 0.5
+    volumeMultiplier: 0.3
   audioSource: {fileID: 2134878460}
   moveMultiplier: 170
   jumpForce: 6
