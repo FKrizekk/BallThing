@@ -38,7 +38,7 @@ public class GameController : MonoBehaviour
         for (int i = 0; i < amount; i++)
         {
             yield return new WaitUntil(() => i - player.score < 10);
-            var ring = Instantiate(ringPrefab,new Vector3(0, 0 + -i * 0.71f, 0), Quaternion.Euler(0, variants[i] * 90 + Random.value > 0.2f ? 45 : 0 + transform.eulerAngles.y,0), transform);
+            var ring = Instantiate(ringPrefab,new Vector3(0, 0 + -i * 0.71f, 0), Quaternion.Euler(0, variants[i] * 90 + Random.value > 0.8f ? 45 : 0 + transform.eulerAngles.y,0), transform);
         }
     }
 }

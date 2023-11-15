@@ -25,19 +25,13 @@ public class Player : MonoBehaviour
     void Update()
     {
         //Movement
-        if(Input.touchCount != 0)
+        float inputX = Input.GetAxisRaw("Horizontal");
+        pole.rotation *= Quaternion.Euler(0, inputX * moveMultiplier, 0);
+
+        isHolding = Input.GetKey(KeyCode.Space);
+        if (Input.GetKeyDown(KeyCode.Space))
         {
-            float inputX = Input.touches[0].deltaPosition.x;
-
-            if (Input.touches[0].phase == TouchPhase.Began) 
-            { 
-                isHolding = true;
-            }else if (Input.touches[0].phase == TouchPhase.Ended)
-            {
-                isHolding = false;
-            }
-
-            pole.rotation *= Quaternion.Euler(0, inputX * -moveMultiplier, 0);
+            rb.velocity = new Vector3(rb.velocity.x , -10f, rb.velocity.z);
         }
 
         scoreText.text = $"SCORE: {score}";
