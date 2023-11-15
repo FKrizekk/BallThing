@@ -2,22 +2,40 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.SocialPlatforms;
+using UnityEngine.SocialPlatforms.Impl;
 using UnityEngine.UIElements;
 
-public class GameController : MonoBehaviour
+public class GameManager : MonoBehaviour
 {
     public GameObject ringPrefab;
     public int ringCount = 10;
     public Player player;
 
+    private int highScore = 0;
+
     void Start()
     {
         StartCoroutine(SpawnRings(ringCount));
+        highScore = PlayerPrefs.GetInt("highScore", 0);
+    }
+
+    public IEnumerator GameEnd()
+    {
+        if(player.score > highScore)
+        {
+            PlayerPrefs.SetInt("highScore", player.score);
+            highScore = player.score;
+        }
+        yield return new WaitUntil(() => false);
+        SceneManager.LoadScene("MenuScene");
     }
 
     bool isLucky = false;
     IEnumerator SpawnRings(int amount)
     {
+        //Spawn logic
         List<int> variants = new List<int>();
         int lastVariant = 0;
         for(int i = 0; i < amount; i++)
@@ -38,7 +56,7 @@ public class GameController : MonoBehaviour
         for (int i = 0; i < amount; i++)
         {
             yield return new WaitUntil(() => i - player.score < 10);
-            var ring = Instantiate(ringPrefab,new Vector3(0, 0 + -i * 0.71f, 0), Quaternion.Euler(0, variants[i] * 90 + Random.value > 0.8f ? 45 : 0 + transform.eulerAngles.y,0), transform);
+            GameObject ring = Instantiate(ringPrefab,new Vector3(0, 0 + -i * 0.71f, 0), Quaternion.Euler(0, (variants[i] * 90) + (Random.value > 0.9f ? 22.5f : 0),0), transform);
         }
     }
 }
