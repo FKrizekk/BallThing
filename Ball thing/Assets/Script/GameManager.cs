@@ -1,34 +1,46 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.SocialPlatforms;
-using UnityEngine.SocialPlatforms.Impl;
-using UnityEngine.UIElements;
 
 public class GameManager : MonoBehaviour
 {
-    public GameObject ringPrefab;
+    [SerializeField] private GameObject menuUI;
+    [SerializeField] private GameObject ringPrefab;
     public int ringCount = 10;
     public Player player;
 
-    private int highScore = 0;
+    [HideInInspector] public int highScore = 0;
 
     void Start()
     {
+        Time.timeScale = 1.0f;
         StartCoroutine(SpawnRings(ringCount));
         highScore = PlayerPrefs.GetInt("highScore", 0);
     }
 
-    public IEnumerator GameEnd()
+    private void Update()
     {
-        if(player.score > highScore)
+        if (player.score > highScore)
         {
             PlayerPrefs.SetInt("highScore", player.score);
             highScore = player.score;
         }
-        yield return new WaitUntil(() => false);
+    }
+
+    public void GameEnd()
+    {
+        menuUI.SetActive(true);
+        Time.timeScale = 0f;
+    }
+
+    public void Retry()
+    {
+        SceneManager.LoadScene("MainScene");
+    }
+
+    public void Quit()
+    {
         SceneManager.LoadScene("MenuScene");
     }
 

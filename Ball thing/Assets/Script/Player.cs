@@ -19,6 +19,7 @@ public class Player : MonoBehaviour
     bool isHolding = false;
     public int score = 0;
     public TMP_Text scoreText;
+    public TMP_Text highScoreText;
     private float holdStartTime = 10000f;
     
 
@@ -34,17 +35,19 @@ public class Player : MonoBehaviour
         transform.parent.rotation *= Quaternion.Euler(0, inputX * -moveMultiplier, 0);
 
         isHolding = Input.GetKey(KeyCode.Space);
-        
+        Debug.Log("update");
         if (Input.GetKeyDown(KeyCode.Space))
         {
+            rb.useGravity = true;
             holdStartTime = Time.time;
             rb.velocity = new Vector3(rb.velocity.x , -10f, rb.velocity.z);
         }
 
-        onfireVFX.SetBool("spawning", (Time.time - holdStartTime > fireUpTime) && isHolding);
+        onfireVFX.SetBool("spawning", (Time.time - holdStartTime >= fireUpTime) && isHolding);
 
-        //Update score text
+        //Update score and highScore text
         scoreText.text = $"SCORE: {score}";
+        highScoreText.text = $"HIGHSCORE: {game.highScore}";
 
         //Limit vertical velocity
         var velocity = rb.velocity;
@@ -63,7 +66,7 @@ public class Player : MonoBehaviour
             if (!isHolding)
                 rb.velocity = Vector3.up * jumpForce;
         }
-        else
+        else if(other.CompareTag("Bad"))
         {
             if (onfireVFX.GetBool("spawning"))
             {
@@ -71,7 +74,7 @@ public class Player : MonoBehaviour
             }
             else
             {
-                StartCoroutine(game.GameEnd());
+                game.GameEnd();
             }
         }
     }
